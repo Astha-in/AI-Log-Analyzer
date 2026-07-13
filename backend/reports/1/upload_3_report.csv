@@ -1,0 +1,9 @@
+timestamp,level,module,service,error_code,message
+2026-07-13 09:00:01,INFO,,,,[auth-service] User authentication service
+2026-07-13 09:02:22,INFO,,,,[api-gateway] Request received from client
+2026-07-13 09:03:18,WARNING,,,,[database] Slow database query detected
+2026-07-13 09:04:30,ERROR,,,,[payment-service] ERR-500 Payment processing
+2026-07-13 09:06:12,WARNING,,,,[memory-service] High memory usage detected
+2026-07-13 09:07:33,CRITICAL,,,,[database] DB-001 Database connection lost
+2026-07-13 09:08:10,ERROR,,,,[api-gateway] API-503 Upstream service
+2026-07-13 10:11:29,ERROR,,,,[auth-service] AUTH-401 Invalid authentication

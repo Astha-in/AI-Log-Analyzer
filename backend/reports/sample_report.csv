@@ -1,0 +1,11 @@
+timestamp,level,message
+2026-07-10 10:00:01,INFO,Authentication Service started successfully
+2026-07-10 10:02:15,DEBUG,Database Connection pool initialized
+2026-07-10 10:05:30,WARNING,Payment Service response time is slow
+2026-07-10 10:10:45,ERROR,Authentication Failed for user admin
+2026-07-10 10:12:20,INFO,User astha logged in successfully
+2026-07-10 10:15:10,ERROR,Database Connection timeout
+2026-07-10 10:18:35,CRITICAL,Payment Service unavailable
+2026-07-10 10:20:00,WARNING,CPU usage exceeded 80 percent
+2026-07-10 10:25:42,INFO,Backup Service completed successfully
+2026-07-10 10:30:15,ERROR,Authentication Failed for user admin
