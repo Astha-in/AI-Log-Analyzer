@@ -1,20 +1,15 @@
-import os
 from datetime import datetime, timedelta, timezone
 
-from dotenv import load_dotenv
 from jose import JWTError, jwt
 
+from backend.core.config import settings
 
-load_dotenv()
 
-SECRET_KEY = os.getenv("JWT_SECRET_KEY")
-
-if not SECRET_KEY:
-    raise ValueError(
-        "JWT_SECRET_KEY not found in environment variables"
-    )
+SECRET_KEY = settings.JWT_SECRET_KEY
+REFRESH_SECRET_KEY = settings.JWT_REFRESH_SECRET_KEY
 
 ALGORITHM = "HS256"
+
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 REFRESH_TOKEN_EXPIRE_DAYS = 7
 
@@ -26,10 +21,12 @@ def create_access_token(data: dict) -> str:
         minutes=ACCESS_TOKEN_EXPIRE_MINUTES
     )
 
-    payload.update({
-        "exp": expire,
-        "token_type": "access",
-    })
+    payload.update(
+        {
+            "exp": expire,
+            "token_type": "access",
+        }
+    )
 
     return jwt.encode(
         payload,
@@ -45,25 +42,63 @@ def create_refresh_token(data: dict) -> str:
         days=REFRESH_TOKEN_EXPIRE_DAYS
     )
 
-    payload.update({
-        "exp": expire,
-        "token_type": "refresh",
-    })
+    payload.update(
+        {
+            "exp": expire,
+            "token_type": "refresh",
+        }
+    )
 
     return jwt.encode(
         payload,
-        SECRET_KEY,
+        REFRESH_SECRET_KEY,
         algorithm=ALGORITHM,
     )
 
 
-def decode_token(token: str) -> dict | None:
+def decode_access_token(token: str) -> dict | None:
     try:
-        return jwt.decode(
+        payload = jwt.decode(
             token,
             SECRET_KEY,
             algorithms=[ALGORITHM],
         )
 
+        if payload.get("token_type") != "access":
+            return None
+
+        return payload
+
     except JWTError:
         return None
+
+
+def decode_refresh_token(token: str) -> dict | None:
+    try:
+        payload = jwt.decode(
+            token,
+            REFRESH_SECRET_KEY,
+            algorithms=[ALGORITHM],
+        )
+
+        if payload.get("token_type") != "refresh":
+            return None
+
+        return payload
+
+    except JWTError:
+        return None
+
+
+def decode_token(token: str) -> dict | None:
+    """
+    Backward compatibility.
+    Existing code can continue calling decode_token()
+    until we migrate all routes.
+    """
+    payload = decode_access_token(token)
+
+    if payload:
+        return payload
+
+    return decode_refresh_token(token)

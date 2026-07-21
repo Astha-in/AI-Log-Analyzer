@@ -4,6 +4,7 @@ from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 
 from alembic import context
+from backend.core.config import settings
 
 from backend.database import Base
 
@@ -13,7 +14,10 @@ from backend.models.user_model import User
 
 
 config = context.config
-
+config.set_main_option(
+    "sqlalchemy.url",
+    settings.DATABASE_URL,
+)
 
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)

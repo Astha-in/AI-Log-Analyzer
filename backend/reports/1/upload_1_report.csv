@@ -1,0 +1,22 @@
+timestamp,level,module,service,error_code,message
+2026-07-13 07:00:01,INFO,,,,Authentication service initialized 2026-07-13 07:02:11 DEBUG JWT configuration loaded
+2026-07-13 07:04:20,INFO,,,,User login request received
+2026-07-13 07:05:18,WARNING,,,,Multiple failed login attempts detected
+2026-07-13 07:06:44,ERROR,,,AUTH-401,Invalid user credentials
+2026-07-13 07:07:09,ERROR,,,AUTH-401,Invalid user credentials
+2026-07-13 07:08:33,ERROR,,,AUTH-401,Invalid user credentials 2026-07-13 07:09:55 CRITICAL SEC-900 Brute force login pattern detected 2026-07-13 08:10:14 INFO Suspicious account temporarily locked
+2026-07-13 08:11:37,WARNING,,,,Login request from unknown device
+2026-07-13 08:12:58,DEBUG,,,,Token validation started
+2026-07-13 08:14:21,ERROR,,,AUTH-403,Expired refresh token rejected
+2026-07-13 09:15:44,INFO,,,,New access token issued
+2026-07-13 09:17:02,DEBUG,,,,Session metadata updated
+2026-07-13 09:18:29,WARNING,,,,Unusual login location pattern detected
+2026-07-13 10:20:11,ERROR,,,SEC-429,Login rate limit exceeded
+2026-07-13 10:21:36,INFO,,,,Rate limit protection activated
+2026-07-13 11:23:17,CRITICAL,,,SEC-901,Repeated unauthorized access attempts
+2026-07-13 11:24:42,WARNING,,,,Security audit event created
+2026-07-13 12:26:08,INFO,,,,User password reset requested
+2026-07-13 12:27:35,DEBUG,,,,Password reset token generated 2026-07-13 13:30:12 INFO Password reset completed
+2026-07-13 14:32:46,INFO,,,,User login successful
+2026-07-13 15:35:09,DEBUG,,,,Authentication metrics collected
+2026-07-13 16:40:00,INFO,,,,Authentication service healthy

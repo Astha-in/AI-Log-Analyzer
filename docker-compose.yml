@@ -1,0 +1,47 @@
+services:
+  postgres:
+    image: postgres:17
+
+    container_name: logsense_postgres
+
+    restart: always
+
+    environment:
+      POSTGRES_DB: logsense
+
+      POSTGRES_USER: logsense
+
+      POSTGRES_PASSWORD: logsense123
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U logsense"]
+
+      interval: 10s
+
+      timeout: 5s
+
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+
+    container_name: logsense_redis
+
+    restart: always
+
+    ports:
+      - "6379:6379"
+
+    volumes:
+      - redis_data:/data
+
+volumes:
+  postgres_data:
+
+  redis_data:
