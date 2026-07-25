@@ -1,3 +1,4 @@
+import useCurrentUpload from "../hooks/useCurrentUpload"
 import {
   useCallback,
   useEffect,
@@ -37,17 +38,15 @@ function Settings() {
   const [backendStatus, setBackendStatus] =
     useState("checking")
 
-  const [currentFile, setCurrentFile] =
-    useState("")
+ const {
+  uploads,
+  selectedUploadId: currentUploadId,
+  filename: currentFile,
+  loading: loadingWorkspace,
+  refreshUploads,
+} = useCurrentUpload()
 
-  const [currentUploadId, setCurrentUploadId] =
-    useState("")
-
-  const [uploadCount, setUploadCount] =
-    useState(0)
-
-  const [loadingWorkspace, setLoadingWorkspace] =
-    useState(true)
+  
 
   const [loggingOut, setLoggingOut] =
     useState(false)
@@ -55,101 +54,21 @@ function Settings() {
   const [error, setError] =
     useState("")
 
+const loadWorkspace = useCallback(async () => {
+  try {
+    setError("")
+    await refreshUploads()
+  } catch (err) {
+    const detail = err?.response?.data?.detail
 
-  const loadWorkspace = useCallback(
-    async () => {
-      try {
-        setLoadingWorkspace(true)
-        setError("")
-
-        const savedUploadId =
-          localStorage.getItem(
-            "currentUploadId"
-          ) || ""
-
-        const savedFilename =
-          localStorage.getItem(
-            "currentLogFile"
-          ) || ""
-
-        setCurrentUploadId(savedUploadId)
-        setCurrentFile(savedFilename)
-
-        const historyResponse = await api.get(
-          "/uploads/history"
-        )
-
-        const uploads =
-          historyResponse.data?.uploads || []
-
-        setUploadCount(uploads.length)
-
-        if (uploads.length === 0) {
-          setCurrentUploadId("")
-          setCurrentFile("")
-
-          localStorage.removeItem(
-            "currentUploadId"
-          )
-
-          localStorage.removeItem(
-            "currentLogFile"
-          )
-
-          return
-        }
-
-        const selectedUpload = uploads.find(
-          (upload) =>
-            String(upload.id) ===
-            String(savedUploadId)
-        )
-
-        if (!selectedUpload) {
-          const latestUpload = uploads[0]
-
-          const uploadId = String(
-            latestUpload.id
-          )
-
-          setCurrentUploadId(uploadId)
-
-          setCurrentFile(
-            latestUpload.filename
-          )
-
-          localStorage.setItem(
-            "currentUploadId",
-            uploadId
-          )
-
-          localStorage.setItem(
-            "currentLogFile",
-            latestUpload.filename
-          )
-
-          window.dispatchEvent(
-            new Event(
-              "currentUploadChanged"
-            )
-          )
-        }
-      } catch (err) {
-        const detail =
-          err?.response?.data?.detail
-
-        setError(
-          typeof detail === "string"
-            ? detail
-            : "Unable to load workspace information."
-        )
-      } finally {
-        setLoadingWorkspace(false)
-      }
-    },
-    []
-  )
-
+    setError(
+      typeof detail === "string"
+        ? detail
+        : "Unable to load workspace information."
+    )
+  }
+}, [refreshUploads])
+  
 
   const checkBackend = useCallback(
     async () => {
@@ -352,7 +271,7 @@ function Settings() {
           value={
             loadingWorkspace
               ? "Loading..."
-              : String(uploadCount)
+              : String(uploads.length)
           }
           description="Files available to your account"
           tone="purple"

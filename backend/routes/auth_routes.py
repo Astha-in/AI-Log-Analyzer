@@ -2,6 +2,7 @@ from fastapi import (
     APIRouter,
     Depends,
     HTTPException,
+    Request,
     status,
 )
 from fastapi.security import (
@@ -20,6 +21,8 @@ from backend.auth.password import (
     hash_password,
     verify_password,
 )
+from backend.core.logger import logger
+from backend.core.rate_limiter import rate_limit
 from backend.database import get_db
 from backend.models.user import (
     LoginRequest,
@@ -101,9 +104,17 @@ def get_current_user(
     status_code=status.HTTP_201_CREATED,
 )
 def register(
+    http_request: Request,
     request: RegisterRequest,
     db: Session = Depends(get_db),
 ):
+    rate_limit(
+        request=http_request,
+        key_prefix="register",
+        limit=5,
+        window=60,
+    )
+
     existing_user = (
         db.query(User)
         .filter(User.email == request.email)
@@ -111,6 +122,10 @@ def register(
     )
 
     if existing_user:
+        logger.warning(
+            f"Registration failed. Email already exists: {request.email}"
+        )
+
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail="An account with this email already exists",
@@ -130,7 +145,16 @@ def register(
         db.commit()
         db.refresh(user)
 
+        logger.info(
+            f"New user registered: {user.email}"
+        )
+
     except IntegrityError:
+
+        logger.warning(
+            f"Registration failed. Email already exists: {request.email}"
+        )
+
         db.rollback()
 
         raise HTTPException(
@@ -149,9 +173,21 @@ def register(
     response_model=TokenResponse,
 )
 def login(
+    http_request: Request,
     request: LoginRequest,
     db: Session = Depends(get_db),
 ):
+    rate_limit(
+        request=http_request,
+        key_prefix="login",
+        limit=5,
+        window=60,
+    )
+
+    logger.info(
+        f"Login attempt: {request.email}"
+    )
+
     user = (
         db.query(User)
         .filter(User.email == request.email)
@@ -162,6 +198,10 @@ def login(
         request.password,
         user.hashed_password,
     ):
+        logger.warning(
+            f"Failed login attempt: {request.email}"
+        )
+
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid email or password",
@@ -172,6 +212,10 @@ def login(
         "user_id": user.id,
         "role": user.role,
     }
+
+    logger.info(
+        f"User logged in successfully: {user.email}"
+    )
 
     return {
         "access_token": create_access_token(
@@ -232,6 +276,10 @@ def refresh_access_token(
         "role": user.role,
     }
 
+    logger.info(
+        f"Access token refreshed for user: {user.email}"
+    )
+
     return {
         "access_token": create_access_token(
             token_data
@@ -257,6 +305,10 @@ def logout(
         get_current_user
     ),
 ):
+    logger.info(
+        f"User logged out: {current_user.email}"
+    )
+
     return {
         "message": "Logged out successfully",
     }

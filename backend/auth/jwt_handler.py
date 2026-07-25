@@ -5,13 +5,23 @@ from jose import JWTError, jwt
 from backend.core.config import settings
 
 
+# JWT Configuration
+
+
 SECRET_KEY = settings.JWT_SECRET_KEY
 REFRESH_SECRET_KEY = settings.JWT_REFRESH_SECRET_KEY
+ALGORITHM = settings.JWT_ALGORITHM
 
-ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = (
+    settings.ACCESS_TOKEN_EXPIRE_MINUTES
+)
 
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
-REFRESH_TOKEN_EXPIRE_DAYS = 7
+REFRESH_TOKEN_EXPIRE_DAYS = (
+    settings.REFRESH_TOKEN_EXPIRE_DAYS
+)
+
+
+# Access Token
 
 
 def create_access_token(data: dict) -> str:
@@ -35,6 +45,9 @@ def create_access_token(data: dict) -> str:
     )
 
 
+# Refresh Token
+
+
 def create_refresh_token(data: dict) -> str:
     payload = data.copy()
 
@@ -56,6 +69,9 @@ def create_refresh_token(data: dict) -> str:
     )
 
 
+# Decode Access Token
+
+
 def decode_access_token(token: str) -> dict | None:
     try:
         payload = jwt.decode(
@@ -71,6 +87,9 @@ def decode_access_token(token: str) -> dict | None:
 
     except JWTError:
         return None
+
+
+# Decode Refresh Token
 
 
 def decode_refresh_token(token: str) -> dict | None:
@@ -90,12 +109,16 @@ def decode_refresh_token(token: str) -> dict | None:
         return None
 
 
+# Backward Compatibility
+
+
 def decode_token(token: str) -> dict | None:
     """
     Backward compatibility.
     Existing code can continue calling decode_token()
-    until we migrate all routes.
+    until all routes are migrated.
     """
+
     payload = decode_access_token(token)
 
     if payload:

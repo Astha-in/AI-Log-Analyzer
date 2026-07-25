@@ -9,6 +9,7 @@ from fastapi import (
 from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 
+from backend.core.logger import logger
 from backend.database import get_db
 from backend.models.user_model import User
 from backend.report_generator import generate_pdf_report
@@ -32,6 +33,11 @@ def download_csv_report(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
+    logger.info(
+        f"CSV report requested "
+        f"(User: {current_user.id}, Upload: {upload_id})"
+    )
+
     upload, file_path = resolve_user_upload_by_id(
         db,
         current_user,
@@ -41,6 +47,11 @@ def download_csv_report(
     logs = parse_upload(file_path)
 
     if not logs:
+        logger.warning(
+            f"No valid logs found for CSV report "
+            f"(Upload: {upload_id})"
+        )
+
         raise HTTPException(
             status_code=400,
             detail="No valid log entries found in file",
@@ -74,30 +85,43 @@ def download_csv_report(
         "message",
     ]
 
-    with report_path.open(
-        "w",
-        newline="",
-        encoding="utf-8",
-    ) as csv_file:
+    try:
+        with report_path.open(
+            "w",
+            newline="",
+            encoding="utf-8",
+        ) as csv_file:
 
-        writer = csv.DictWriter(
-            csv_file,
-            fieldnames=fieldnames,
-            extrasaction="ignore",
+            writer = csv.DictWriter(
+                csv_file,
+                fieldnames=fieldnames,
+                extrasaction="ignore",
+            )
+
+            writer.writeheader()
+
+            for log in logs:
+                writer.writerow(
+                    {
+                        field: log.get(
+                            field,
+                            "",
+                        )
+                        for field in fieldnames
+                    }
+                )
+
+        logger.info(
+            f"CSV report generated successfully "
+            f"(Upload: {upload.id})"
         )
 
-        writer.writeheader()
-
-        for log in logs:
-            writer.writerow(
-                {
-                    field: log.get(
-                        field,
-                        "",
-                    )
-                    for field in fieldnames
-                }
-            )
+    except Exception:
+        logger.exception(
+            f"CSV report generation failed "
+            f"(Upload: {upload.id})"
+        )
+        raise
 
     return FileResponse(
         path=str(report_path),
@@ -118,6 +142,11 @@ def download_pdf_report(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
+    logger.info(
+        f"PDF report requested "
+        f"(User: {current_user.id}, Upload: {upload_id})"
+    )
+
     upload, file_path = resolve_user_upload_by_id(
         db,
         current_user,
@@ -127,6 +156,11 @@ def download_pdf_report(
     logs = parse_upload(file_path)
 
     if not logs:
+        logger.warning(
+            f"No valid logs found for PDF report "
+            f"(Upload: {upload.id})"
+        )
+
         raise HTTPException(
             status_code=400,
             detail="No valid log entries found in file",
@@ -158,6 +192,12 @@ def download_pdf_report(
     )
 
     if report_path.exists():
+
+        logger.info(
+            f"Serving cached PDF report "
+            f"(Upload: {upload.id})"
+        )
+
         return FileResponse(
             path=str(report_path),
             media_type="application/pdf",
@@ -176,11 +216,21 @@ def download_pdf_report(
             ai_summary=analysis.ai_summary,
         )
 
-    except Exception as error:
+        logger.info(
+            f"PDF report generated successfully "
+            f"(Upload: {upload.id})"
+        )
+
+    except Exception:
+        logger.exception(
+            f"PDF generation failed "
+            f"(Upload: {upload.id})"
+        )
+
         raise HTTPException(
             status_code=500,
-            detail=f"PDF generation failed: {error}",
-        ) from error
+            detail="PDF generation failed.",
+        )
 
     return FileResponse(
         path=str(report_path),

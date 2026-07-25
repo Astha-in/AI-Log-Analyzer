@@ -1,56 +1,50 @@
 # AI Log Analyzer
 
-An AI-powered full-stack web application that enables users to upload, parse, analyze, visualize, and generate intelligent insights from system log files.
+AI Log Analyzer is a production-ready full-stack web application that helps users upload, parse, analyze, visualize, and generate AI-powered insights from system log files.
 
-The application automatically extracts structured log events, classifies log severity, detects anomalies, generates interactive dashboards, and uses **Google Gemini AI** to provide system health analysis, root cause identification, and actionable recommendations.
+The application automatically extracts structured log information, classifies log severity, generates interactive dashboards, and leverages Google Gemini AI to provide intelligent summaries, root cause analysis, security observations, performance insights, and actionable recommendations.
 
 ---
 
 # Project Overview
 
-Modern applications generate thousands of log entries every day, making manual analysis slow and error-prone.
+Modern applications generate thousands of log entries every day, making manual log analysis difficult and time-consuming. AI Log Analyzer simplifies this process by transforming raw log files into meaningful insights through automation and artificial intelligence.
 
-AI Log Analyzer simplifies this process by allowing users to upload log files and instantly receive:
-
-- Structured parsed logs
-- Error classification
-- Severity statistics
-- Interactive charts
-- AI-generated summaries
-- Downloadable CSV and PDF reports
-
-The application provides a secure, user-specific workspace where each user can manage and analyze only their own uploaded logs.
+Users can securely upload log files, view parsed log entries, analyze statistics, visualize system behavior through interactive charts, and generate downloadable reports. Every user's data is isolated using secure authentication and authorization mechanisms.
 
 ---
 
-# Features
+# Key Features
 
-## Authentication
+## Authentication & Security
 
 - User Registration
-- User Login
-- JWT Authentication
+- Secure Login
+- JWT Access Authentication
 - Refresh Token Authentication
-- Secure Logout
+- Password Hashing
 - Protected Routes
-- User-specific data isolation
+- Protected REST APIs
+- User-specific Data Isolation
+- Secure Logout
 
 ---
 
 ## Upload Management
 
 - Upload `.log` and `.txt` files
-- Maximum upload size: **10 MB**
-- Secure UUID-based file storage
-- Upload History
-- Delete Uploaded Files
-- Automatic upload synchronization across pages
+- Maximum upload size of **10 MB**
+- UUID-based secure file storage
+- File validation
+- Upload history
+- Delete uploaded files
+- Upload status tracking
 
 ---
 
 ## Log Parsing
 
-Extracts structured information including:
+Automatically extracts:
 
 - Timestamp
 - Log Level
@@ -59,7 +53,7 @@ Extracts structured information including:
 - Error Code
 - Message
 
-Supported Levels:
+Supported log levels:
 
 - INFO
 - DEBUG
@@ -72,41 +66,53 @@ Supported Levels:
 ## Parsed Logs
 
 - Search logs
-- Level filtering
-- Sort by every column
+- Advanced filtering
+- Column sorting
 - Pagination
+- Upload selection
 - CSV Export
 - PDF Export
-- Upload selection synchronization
 
 ---
 
 ## Dashboard
 
-Interactive analytics dashboard showing:
+Interactive dashboard with:
 
-- Total Logs
-- Total Errors
-- Total Warnings
-- Critical Events
-- Error Rate
-- Log Distribution Chart
-- Hourly Activity Chart
+- Total Uploaded Files
+- Total Parsed Logs
+- INFO Count
+- DEBUG Count
+- WARNING Count
+- ERROR Count
+- CRITICAL Count
+- Success Rate
+- Recent Upload Activity
+- AI Summary Card
+
+Interactive charts include:
+
+- Log Distribution
+- Hourly Activity
+- Daily Activity
+- Severity Distribution
+- Error Timeline
 
 ---
 
 ## AI Analysis
 
-Powered by **Google Gemini AI**
+Powered by Google Gemini AI.
 
 Generates:
 
-- Overall System Health
-- Critical Issues
-- Performance Concerns
-- Security Concerns
-- Possible Root Causes
-- Recommended Actions
+- Executive Summary
+- System Health Analysis
+- Root Cause Analysis
+- Performance Insights
+- Security Observations
+- High Priority Issues
+- AI Recommendations
 
 ---
 
@@ -114,10 +120,11 @@ Generates:
 
 Generate downloadable reports including:
 
-- CSV Report
-- PDF Report
-- AI Summary
-- Statistics Overview
+- CSV Reports
+- PDF Reports
+- Parsed Log Reports
+- AI Summary Reports
+- Statistics Reports
 
 ---
 
@@ -125,13 +132,15 @@ Generate downloadable reports including:
 
 ## Frontend
 
-- React
+- React.js
 - Vite
 - Tailwind CSS
+- React Router DOM
 - Axios
-- React Router
 - Recharts
+- React Dropzone
 - React Icons
+- Context API
 
 ---
 
@@ -139,15 +148,18 @@ Generate downloadable reports including:
 
 - FastAPI
 - Python
-- JWT Authentication
 - SQLAlchemy
 - Alembic
+- Pydantic
+- Passlib
+- Python-Jose
+- Uvicorn
 
 ---
 
 ## Database
 
-- SQLite
+- PostgreSQL
 
 ---
 
@@ -159,48 +171,205 @@ Generate downloadable reports including:
 
 ## Authentication
 
-- JWT Access Tokens
-- Refresh Tokens
+- JWT Access Token
+- Refresh Token
+- Password Hashing
 
 ---
 
+## Deployment
+
+- Docker
+- Docker Compose
+- Render
+- Vercel
+
+---
+
+# System Architecture
+
+The application follows a secure client-server architecture where the frontend communicates with the backend using REST APIs secured by JWT authentication.
+
+```text
+                     +----------------------+
+                     |    React Frontend    |
+                     +----------+-----------+
+                                |
+                                | REST API
+                                | JWT Authentication
+                                |
+                     +----------v-----------+
+                     |    FastAPI Backend   |
+                     +----------+-----------+
+                                |
+             +------------------+------------------+
+             |                  |                  |
+             |                  |                  |
+      +------v------+    +------v------+    +------v------+
+      | PostgreSQL  |    | Gemini AI   |    | File Storage|
+      |  Database   |    | Integration |    |   Uploads   |
+      +-------------+    +-------------+    +-------------+
+```
+
+---
+
+# Software Architecture
+
+The backend follows a modular layered architecture for scalability and maintainability.
+
+```text
+Presentation Layer
+        │
+        ▼
+Authentication Layer
+        │
+        ▼
+API Routes
+        │
+        ▼
+Service Layer
+        │
+        ▼
+Parser & AI Layer
+        │
+        ▼
+Database Layer
+        │
+        ▼
+PostgreSQL
+```
+
+Application layers:
+
+- Presentation Layer
+- Authentication Layer
+- API Layer
+- Service Layer
+- Parser Layer
+- AI Analysis Layer
+- Report Generation Layer
+- Database Layer
+
+---
+
+# Algorithms and Techniques
+
+## Log Parsing
+
+- Regular Expression (Regex) Parsing
+- Pattern Matching
+- Structured JSON Conversion
+
+---
+
+## Data Processing
+
+- Severity Classification
+- Frequency Counting
+- Statistical Aggregation
+- Error Categorization
+- Timestamp Grouping
+
+---
+
+## Search and Filtering
+
+- Keyword Search
+- Multi-level Filtering
+- Server-side Pagination
+- Dynamic Sorting
+
+---
+
+## Artificial Intelligence
+
+- Prompt Engineering
+- Large Language Model (LLM) Analysis
+- Root Cause Identification
+- AI Recommendation Generation
+
+---
+
+## Data Visualization
+
+- Hourly Aggregation
+- Daily Aggregation
+- Severity Distribution
+- Timeline Generation
+- Percentage Calculation
+
 # Project Structure
 
-```
-AI-Log-Analyzer
+```text
+AI-Log-Analyzer/
 │
-├── backend
-│   ├── auth
-│   ├── models
-│   ├── routes
-│   ├── services
+├── backend/
+│   ├── alembic/
+│   ├── auth/
+│   ├── models/
+│   ├── routes/
+│   ├── schemas/
+│   ├── services/
+│   ├── utils/
+│   ├── uploads/
+│   ├── reports/
 │   ├── app.py
-│   ├── parser.py
 │   ├── analyzer.py
+│   ├── parser.py
 │   ├── ai_summary.py
 │   ├── report_generator.py
-│   └── visualization.py
+│   ├── visualization.py
+│   ├── database.py
+│   ├── config.py
+│   └── requirements.txt
 │
-├── frontend
-│   ├── src
-│   │   ├── components
-│   │   ├── context
-│   │   ├── layouts
-│   │   ├── pages
-│   │   ├── routes
-│   │   ├── services
-│   │   └── App.jsx
+├── frontend/
+│   ├── public/
+│   ├── src/
+│   │   ├── assets/
+│   │   ├── components/
+│   │   ├── context/
+│   │   ├── hooks/
+│   │   ├── layouts/
+│   │   ├── pages/
+│   │   ├── routes/
+│   │   ├── services/
+│   │   ├── utils/
+│   │   ├── App.jsx
+│   │   └── main.jsx
 │   │
-│   ├── public
 │   ├── package.json
-│   └── vite.config.js
+│   ├── vite.config.js
+│   └── tailwind.config.js
 │
-├── migrations
-├── sample_logs
-├── requirements.txt
+├── Dockerfile
+├── docker-compose.yml
 ├── alembic.ini
-└── README.md
+├── README.md
+└── LICENSE
 ```
+
+---
+
+# Folder Description
+
+| Folder     | Description                         |
+| ---------- | ----------------------------------- |
+| backend    | FastAPI backend source code         |
+| frontend   | React frontend application          |
+| auth       | Authentication and authorization    |
+| models     | SQLAlchemy database models          |
+| routes     | REST API endpoints                  |
+| schemas    | Pydantic request/response models    |
+| services   | Business logic implementation       |
+| uploads    | Uploaded log files                  |
+| reports    | Generated CSV and PDF reports       |
+| utils      | Helper functions and utilities      |
+| assets     | Images, icons, and static resources |
+| components | Reusable React components           |
+| pages      | Application pages                   |
+| context    | React Context API                   |
+| hooks      | Custom React hooks                  |
 
 ---
 
@@ -209,7 +378,12 @@ AI-Log-Analyzer
 ## Clone Repository
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/your-username/AI-Log-Analyzer.git
+```
+
+Navigate to the project directory.
+
+```bash
 cd AI-Log-Analyzer
 ```
 
@@ -217,74 +391,100 @@ cd AI-Log-Analyzer
 
 # Backend Setup
 
-Activate virtual environment
+Create a virtual environment.
 
 ```bash
 python -m venv venv
 ```
 
-Windows
+Activate the virtual environment.
+
+### Windows
 
 ```bash
 venv\Scripts\activate
 ```
 
-Install dependencies
+### Linux / macOS
+
+```bash
+source venv/bin/activate
+```
+
+Install backend dependencies.
 
 ```bash
 pip install -r requirements.txt
 ```
 
-Run backend
+Run database migrations.
 
 ```bash
-uvicorn backend.app:app --reload
+alembic upgrade head
 ```
 
-Backend URL
+Start the FastAPI server.
 
+```bash
+uvicorn app:app --reload
 ```
+
+Backend will run at:
+
+```text
 http://127.0.0.1:8000
 ```
 
-Swagger Documentation
+Swagger Documentation:
 
-```
+```text
 http://127.0.0.1:8000/docs
+```
+
+ReDoc Documentation:
+
+```text
+http://127.0.0.1:8000/redoc
 ```
 
 ---
 
 # Frontend Setup
 
-Navigate to frontend
+Navigate to the frontend folder.
 
 ```bash
 cd frontend
 ```
 
-Install dependencies
+Install dependencies.
 
 ```bash
 npm install
 ```
 
-Run development server
+Start the development server.
 
 ```bash
 npm run dev
 ```
 
-Frontend URL
+Frontend will run at:
 
-```
+```text
 http://localhost:5173
 ```
 
-Production Build
+Create a production build.
 
 ```bash
 npm run build
+```
+
+Preview the production build.
+
+```bash
+npm run preview
 ```
 
 ---
@@ -294,136 +494,635 @@ npm run build
 Create a `.env` file inside the backend directory.
 
 ```env
-GEMINI_API_KEY=YOUR_GEMINI_API_KEY
+DATABASE_URL=postgresql://username:password@localhost:5432/ai_log_analyzer
 
-SECRET_KEY=YOUR_SECRET_KEY
+SECRET_KEY=your_secret_key
 
-DATABASE_URL=sqlite:///./ai_log_analyzer.db
+ALGORITHM=HS256
 
 ACCESS_TOKEN_EXPIRE_MINUTES=30
 
 REFRESH_TOKEN_EXPIRE_DAYS=7
+
+GEMINI_API_KEY=your_gemini_api_key
 ```
 
 ---
 
-# API Endpoints
+# Database Configuration
 
-## Authentication
+The application uses **PostgreSQL** as the primary database.
 
-| Method | Endpoint       |
-| ------ | -------------- |
-| POST   | /auth/register |
-| POST   | /auth/login    |
-| POST   | /auth/refresh  |
-| POST   | /auth/logout   |
-| GET    | /auth/me       |
+Database stores:
 
----
+- User Accounts
+- Login Credentials
+- Upload Metadata
+- Parsed Log Records
+- AI Analysis Results
+- Statistics
+- Generated Reports
+- Upload History
 
-## Upload
-
-| Method | Endpoint             |
-| ------ | -------------------- |
-| POST   | /upload              |
-| GET    | /uploads/history     |
-| DELETE | /uploads/{upload_id} |
+Database migrations are managed using **Alembic**.
 
 ---
 
-## Analysis
+# Authentication Workflow
 
-| Method | Endpoint                         |
-| ------ | -------------------------------- |
-| GET    | /statistics/id/{upload_id}       |
-| GET    | /charts/id/{upload_id}           |
-| GET    | /analyze-uploaded/id/{upload_id} |
-| GET    | /ai-summary/id/{upload_id}       |
+```text
+User Registration
+        │
+        ▼
+User Login
+        │
+        ▼
+JWT Access Token Generated
+        │
+        ▼
+Access Protected APIs
+        │
+        ▼
+Upload & Analyze Logs
+        │
+        ▼
+Refresh Token (if required)
+        │
+        ▼
+Secure Logout
+```
+
+# File Upload Workflow
+
+```text
+Select Log File
+        │
+        ▼
+Validate File
+        │
+        ▼
+Upload to Server
+        │
+        ▼
+Store Using UUID
+        │
+        ▼
+Parse Log Entries
+        │
+        ▼
+Save Parsed Data
+        │
+        ▼
+Generate Statistics
+        │
+        ▼
+Generate AI Summary
+```
+
+# Log Processing Pipeline
+
+```text
+Raw Log File
+      │
+      ▼
+Upload Module
+      │
+      ▼
+Parser Engine
+      │
+      ▼
+Structured Log Data
+      │
+      ▼
+Statistics Generator
+      │
+      ▼
+Visualization Engine
+      │
+      ▼
+Gemini AI Analysis
+      │
+      ▼
+Reports Generation
+```
+
+# REST API Endpoints
+
+## Authentication APIs
+
+| Method | Endpoint         | Description                    |
+| ------ | ---------------- | ------------------------------ |
+| POST   | `/auth/register` | Register a new user            |
+| POST   | `/auth/login`    | Authenticate user              |
+| POST   | `/auth/refresh`  | Refresh access token           |
+| POST   | `/auth/logout`   | Logout user                    |
+| GET    | `/auth/me`       | Get authenticated user details |
 
 ---
 
-## Reports
+## Upload APIs
 
-| Method | Endpoint                   |
-| ------ | -------------------------- |
-| GET    | /report/csv/id/{upload_id} |
-| GET    | /report/pdf/id/{upload_id} |
+| Method | Endpoint               | Description          |
+| ------ | ---------------------- | -------------------- |
+| POST   | `/upload`              | Upload a log file    |
+| GET    | `/uploads`             | Get upload history   |
+| GET    | `/uploads/{upload_id}` | Get upload details   |
+| DELETE | `/uploads/{upload_id}` | Delete uploaded file |
+
+---
+
+## Parsed Logs APIs
+
+| Method | Endpoint                              | Description               |
+| ------ | ------------------------------------- | ------------------------- |
+| GET    | `/parsed-logs/id/{upload_id}`         | View parsed logs          |
+| GET    | `/parsed-logs/export/csv/{upload_id}` | Export parsed logs as CSV |
+| GET    | `/parsed-logs/export/pdf/{upload_id}` | Export parsed logs as PDF |
+
+---
+
+## Statistics APIs
+
+| Method | Endpoint                     | Description                   |
+| ------ | ---------------------------- | ----------------------------- |
+| GET    | `/statistics/id/{upload_id}` | Get statistics for a log file |
+| GET    | `/statistics/dashboard`      | Dashboard statistics          |
+
+---
+
+## Charts APIs
+
+| Method | Endpoint                 | Description                  |
+| ------ | ------------------------ | ---------------------------- |
+| GET    | `/charts/id/{upload_id}` | Generate chart data          |
+| GET    | `/charts/dashboard`      | Dashboard visualization data |
+
+---
+
+## AI Analysis APIs
+
+| Method | Endpoint                           | Description          |
+| ------ | ---------------------------------- | -------------------- |
+| GET    | `/analyze-uploaded/id/{upload_id}` | Generate AI analysis |
+| GET    | `/ai-summary/id/{upload_id}`       | Get AI summary       |
+
+---
+
+## Reports APIs
+
+| Method | Endpoint                     | Description         |
+| ------ | ---------------------------- | ------------------- |
+| GET    | `/report/csv/id/{upload_id}` | Download CSV report |
+| GET    | `/report/pdf/id/{upload_id}` | Download PDF report |
 
 ---
 
 # Application Workflow
 
-1. Register a new account.
-2. Login securely.
-3. Upload a system log file.
-4. Parse structured log events.
-5. View parsed logs.
-6. Search, sort, and filter logs.
-7. Analyze statistics.
-8. Visualize charts.
-9. Generate AI insights.
-10. Download CSV/PDF reports.
-11. Delete uploaded logs when no longer required.
+```text
+User Registration/Login
+          │
+          ▼
+Authentication
+          │
+          ▼
+Upload Log File
+          │
+          ▼
+File Validation
+          │
+          ▼
+Log Parsing
+          │
+          ▼
+Store Parsed Data
+          │
+          ▼
+Statistics Generation
+          │
+          ▼
+Visualization
+          │
+          ▼
+AI Analysis
+          │
+          ▼
+Generate Reports
+```
+
+---
+
+# Dashboard Modules
+
+The dashboard provides a centralized view of log analytics.
+
+## Summary Cards
+
+- Total Uploaded Files
+- Total Parsed Logs
+- INFO Logs
+- DEBUG Logs
+- WARNING Logs
+- ERROR Logs
+- CRITICAL Logs
+- Success Rate
+- Error Rate
+
+---
+
+## Charts
+
+- Log Distribution Chart
+- Severity Distribution Chart
+- Hourly Activity Chart
+- Daily Activity Chart
+- Error Timeline
+- Most Frequent Errors
+
+---
+
+## Activity Section
+
+- Recent Uploads
+- Upload Status
+- Latest AI Analysis
+- Report History
+
+---
+
+# Log Analysis Process
+
+The application performs the following analysis:
+
+1. Read uploaded log file.
+2. Extract structured log entries.
+3. Classify log levels.
+4. Detect errors and warnings.
+5. Calculate statistics.
+6. Generate visualizations.
+7. Produce AI insights.
+8. Create downloadable reports.
+
+---
+
+# Statistics Generated
+
+The analyzer computes:
+
+- Total Log Entries
+- INFO Count
+- DEBUG Count
+- WARNING Count
+- ERROR Count
+- CRITICAL Count
+- Error Percentage
+- Success Percentage
+- Most Frequent Error
+- Most Frequent Warning
+- Hourly Log Distribution
+- Daily Log Distribution
+
+---
+
+# AI Analysis
+
+Google Gemini AI analyzes parsed logs and generates intelligent insights.
+
+Generated AI outputs include:
+
+- Executive Summary
+- System Health Assessment
+- Root Cause Analysis
+- Error Pattern Detection
+- Performance Analysis
+- Security Analysis
+- Risk Assessment
+- High Priority Issues
+- Recommendations
+- Overall Conclusion
+
+---
+
+# Report Generation
+
+The application supports exporting analysis results in multiple formats.
+
+Available reports:
+
+- CSV Report
+- PDF Report
+- Parsed Log Report
+- AI Summary Report
+- Statistics Report
+
+Each report includes:
+
+- Upload Information
+- File Details
+- Parsing Summary
+- Log Statistics
+- Severity Distribution
+- AI Insights
+- Recommendations
+- Generation Timestamp
+
+---
+
+# Visualization Features
+
+Interactive charts help users understand system behavior.
+
+Available visualizations:
+
+- Bar Chart
+- Line Chart
+- Pie Chart
+- Area Chart
+- Timeline Chart
+
+Charts provide insights into:
+
+- Error Trends
+- Log Distribution
+- Severity Breakdown
+- Daily Activity
+- Hourly Activity
+- System Performance
+
+---
+
+# Search and Filtering
+
+The Parsed Logs module supports advanced data exploration.
+
+Features include:
+
+- Keyword Search
+- Log Level Filter
+- Module Filter
+- Service Filter
+- Error Code Filter
+- Date Filter
+- Dynamic Sorting
+- Server-side Pagination
+
+---
+
+# Supported Log Levels
+
+The parser recognizes the following standard log levels:
+
+| Level    | Purpose                         |
+| -------- | ------------------------------- |
+| INFO     | General application information |
+| DEBUG    | Debugging information           |
+| WARNING  | Potential issues                |
+| ERROR    | Application errors              |
+| CRITICAL | Critical system failures        |
+
+# Security Features
+
+The application follows industry-standard security practices to ensure user data and uploaded log files remain protected.
+
+## Authentication Security
+
+- JWT Access Token Authentication
+- Refresh Token Authentication
+- Password Hashing using Passlib
+- Protected REST APIs
+- Protected Frontend Routes
+- Role-based Authorization Ready
+- Secure Logout Mechanism
+
+---
+
+## Data Security
+
+- User-specific Data Isolation
+- Secure Database Transactions
+- Environment Variable Configuration
+- Input Validation
+- Request Validation
+- API Error Handling
+
+---
+
+## File Security
+
+- UUID-based File Storage
+- File Type Validation
+- Maximum File Size Validation
+- Secure File Upload
+- Secure File Deletion
+- Duplicate Upload Prevention
+
+---
+
+# Error Handling
+
+The application handles common runtime and validation errors gracefully.
+
+Supported error handling includes:
+
+- Invalid Login Credentials
+- Invalid JWT Token
+- Expired Access Token
+- Unauthorized Requests
+- Missing Required Fields
+- Invalid File Type
+- File Size Exceeded
+- Empty Log File
+- Log Parsing Errors
+- Database Connection Errors
+- API Validation Errors
+- AI Service Errors
+- Network Errors
+
+---
+
+# Performance Optimizations
+
+The application is optimized to efficiently process large log files.
+
+Implemented optimizations include:
+
+- Efficient Regex Parsing
+- Optimized SQL Queries
+- Server-side Pagination
+- Server-side Filtering
+- Server-side Sorting
+- Lazy Loading
+- Cached AI Responses
+- Optimized API Responses
+- Responsive User Interface
+
+---
+
+# Deployment
+
+The project can be deployed using the following technologies.
+
+## Frontend
+
+- Vercel
+- Netlify
+
+---
+
+## Backend
+
+- Render
+- Railway
+- Docker
+
+---
+
+## Database
+
+- PostgreSQL
+
+---
+
+# Docker Support
+
+The application supports containerized deployment.
+
+Included Docker components:
+
+- Dockerfile
+- Docker Compose
+- Environment Configuration
+- Multi-service Deployment
+- Production-ready Configuration
+
+---
+
+# Testing
+
+The project can be tested using the following approaches:
+
+## Backend Testing
+
+- API Testing
+- Authentication Testing
+- Upload Testing
+- Parser Testing
+- Database Testing
+- AI Integration Testing
+
+---
+
+## Frontend Testing
+
+- UI Testing
+- Form Validation
+- Route Protection
+- Responsive Design Testing
+- API Integration Testing
+
+---
+
+# Browser Compatibility
+
+The frontend is compatible with modern web browsers.
+
+Supported browsers:
+
+- Google Chrome
+- Microsoft Edge
+- Mozilla Firefox
+- Safari
 
 ---
 
 # Screenshots
 
-Add screenshots before submission.
+Add application screenshots before publishing the repository.
 
 Suggested screenshots:
 
 - Login Page
-- Register Page
+- Registration Page
 - Dashboard
 - Upload Logs
 - Parsed Logs
 - AI Analysis
 - Reports
+- Settings
 - Swagger API Documentation
 
-Example folder:
+Example folder structure:
 
-```
+```text
 screenshots/
-    login.png
-    dashboard.png
-    upload.png
-    parsed_logs.png
-    ai_analysis.png
-    reports.png
+│
+├── login.png
+├── register.png
+├── dashboard.png
+├── upload.png
+├── parsed_logs.png
+├── ai_analysis.png
+├── reports.png
+├── settings.png
+└── swagger.png
 ```
 
----
+# Future Enhancements
 
-# Security Features
+Planned improvements for future versions include:
 
-- JWT Authentication
-- Refresh Token Support
-- Password Hashing
-- User-specific Upload Isolation
-- Protected API Routes
-- Secure File Upload Validation
-- UUID-based File Storage
-
----
-
-# Future Improvements
-
-- Docker Deployment
-- PostgreSQL Support
+- Real-time Log Streaming
 - Elasticsearch Integration
 - Kibana Dashboard Integration
-- Multi-file Comparison
-- Advanced AI Analytics
-- Cloud Storage Integration
+- Redis Caching
+- Kubernetes Deployment
+- Cloud Storage Support
 - Email Report Scheduling
+- WebSocket Notifications
+- Multi-file Log Comparison
+- Advanced AI Analytics
+- Role-based Access Control
+- Team Collaboration
+- Dark Mode Support
+- Mobile Application
+- Multi-language Support
 
----
+# Project Highlights
+
+- Production-ready Architecture
+- Secure Authentication
+- AI-powered Log Analysis
+- Interactive Dashboard
+- Advanced Log Parsing
+- RESTful API Design
+- PostgreSQL Database
+- Google Gemini AI Integration
+- CSV & PDF Report Generation
+- Responsive User Interface
+- Modular Code Structure
+- Docker Deployment Support
+
+# Contributing
+
+Contributions are welcome.
+
+1. Fork the repository.
+2. Create a new feature branch.
+3. Commit your changes.
+4. Push the branch.
+5. Open a Pull Request.
+
+Please follow coding standards and write clear commit messages.
+
+# License
+
+This project is licensed under the **MIT License**.
+
+You are free to use, modify, and distribute this project under the terms of the MIT License.
 
 # Author
 
-**Astha Sandilya**
+\*_Astha _
 
 B.Tech Computer Science Engineering
 
@@ -431,8 +1130,27 @@ AI & Full Stack Developer
 
 Vivekananda Global University
 
----
+### Connect
 
-# License
+- GitHub: https://github.com/Astha-in
+- LinkedIn: https://www.linkedin.com/in/astha-innet
+- Email: astha.innet@gmail.com
 
-This project has been developed for educational and academic purposes.
+# Acknowledgements
+
+This project was built using the following open-source technologies:
+
+- React
+- Vite
+- Tailwind CSS
+- FastAPI
+- PostgreSQL
+- SQLAlchemy
+- Alembic
+- Google Gemini AI
+- Recharts
+- React Dropzone
+- Axios
+- Docker
+
+We sincerely thank the open-source community for providing these excellent tools and frameworks.

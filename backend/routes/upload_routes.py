@@ -5,12 +5,16 @@ from fastapi import (
     Depends,
     File,
     HTTPException,
+    Request,
     UploadFile,
 )
 from sqlalchemy.orm import Session
 
 from backend.analyzer import analyze_logs
 from backend.anomaly_detector import detect_anomalies
+from backend.core.logger import logger
+from backend.core.rate_limiter import rate_limit
+from backend.core.redis_client import redis_client
 from backend.database import get_db
 from backend.models.upload_model import Upload
 from backend.models.user_model import User
@@ -31,14 +35,31 @@ router = APIRouter()
 
 @router.post("/upload")
 async def upload_log_file(
+    http_request: Request,
     file: UploadFile = File(...),
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
+    rate_limit(
+        request=http_request,
+        key_prefix="upload",
+        limit=10,
+        window=3600,
+    )
+
+    logger.info(
+        f"Upload request received from user {current_user.id}"
+    )
+
     upload = await save_user_upload(
         file=file,
         db=db,
         user_id=current_user.id,
+    )
+
+    logger.info(
+        f"File uploaded: {upload.original_filename} "
+        f"(Upload ID: {upload.id})"
     )
 
     try:
@@ -51,6 +72,11 @@ async def upload_log_file(
 
         db.commit()
         db.refresh(upload)
+
+        logger.info(
+            f"Upload processed successfully "
+            f"(Upload ID: {upload.id}, Logs: {upload.total_logs})"
+        )
 
         statistics = analyze_logs(logs)
         anomalies = detect_anomalies(logs)
@@ -68,6 +94,12 @@ async def upload_log_file(
         }
 
     except Exception:
+
+        logger.exception(
+            f"Upload processing failed "
+            f"(Upload ID: {upload.id})"
+        )
+
         db.rollback()
 
         try:
@@ -76,6 +108,12 @@ async def upload_log_file(
             db.commit()
 
         except Exception:
+
+            logger.exception(
+                f"Failed updating upload status "
+                f"(Upload ID: {upload.id})"
+            )
+
             db.rollback()
 
         raise
@@ -98,6 +136,10 @@ def get_upload_history(
             Upload.id.desc(),
         )
         .all()
+    )
+
+    logger.info(
+        f"Upload history requested by user {current_user.id}"
     )
 
     return {
@@ -149,6 +191,8 @@ def delete_upload(
         / f"upload_{upload.id}_report.pdf"
     )
 
+    cache_key = f"ai_summary:{current_user.id}:{upload.id}"
+
     try:
         if file_path.exists():
             file_path.unlink()
@@ -159,10 +203,24 @@ def delete_upload(
         if pdf_report.exists():
             pdf_report.unlink()
 
+        # Remove cached AI summary
+        redis_client.delete(cache_key)
+
         db.delete(upload)
         db.commit()
 
+        logger.info(
+            f"Upload deleted successfully "
+            f"(User: {current_user.id}, Upload: {upload.id})"
+        )
+
     except Exception as error:
+
+        logger.exception(
+            f"Failed to delete upload "
+            f"(User: {current_user.id}, Upload: {upload.id})"
+        )
+
         db.rollback()
 
         raise HTTPException(
