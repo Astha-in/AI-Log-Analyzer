@@ -25,43 +25,52 @@ app = FastAPI(
 # Middleware
 # =========================================================
 
-# app.add_middleware(
-#     CORSMiddleware,
-#     allow_origin_regex=r"https://.*\.vercel\.app",
-#     allow_credentials=True,
-#     allow_methods=["*"],
-#     allow_headers=["*"],
-# )
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origin_regex=".*",
+    allow_origin_regex=r"^https://.*\.vercel\.app$",
     allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
-@app.middleware("http")
-async def log_requests(
-    request: Request,
-    call_next,
-):
-    start_time = time.time()
 
+
+# @app.middleware("http")
+# async def log_requests(
+#     request: Request,
+#     call_next,
+# ):
+#     start_time = time.time()
+
+#     response = await call_next(request)
+
+#     process_time = (
+#         time.time() - start_time
+#     ) * 1000
+
+#     logger.info(
+#         f"{request.method} "
+#         f"{request.url.path} "
+#         f"{response.status_code} "
+#         f"{process_time:.2f} ms"
+#     )
+
+#     return response
+@app.middleware("http")
+async def log_requests(request: Request, call_next):
+    if request.method == "OPTIONS":
+        return await call_next(request)
+
+    start_time = time.time()
     response = await call_next(request)
 
-    process_time = (
-        time.time() - start_time
-    ) * 1000
+    process_time = (time.time() - start_time) * 1000
 
     logger.info(
-        f"{request.method} "
-        f"{request.url.path} "
-        f"{response.status_code} "
-        f"{process_time:.2f} ms"
+        f"{request.method} {request.url.path} "
+        f"{response.status_code} {process_time:.2f} ms"
     )
 
     return response
-
 
 # =========================================================
 # Global Exception Handler
