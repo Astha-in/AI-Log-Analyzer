@@ -25,15 +25,21 @@ app = FastAPI(
 # Middleware
 # =========================================================
 
+# app.add_middleware(
+#     CORSMiddleware,
+#     allow_origin_regex=r"https://.*\.vercel\.app",
+#     allow_credentials=True,
+#     allow_methods=["*"],
+#     allow_headers=["*"],
+# )
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origin_regex=r"https://.*\.vercel\.app",
-    allow_credentials=True,
+    allow_origin_regex=".*",
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-
 @app.middleware("http")
 async def log_requests(
     request: Request,
