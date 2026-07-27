@@ -174,7 +174,11 @@ def delete_upload(
         upload_id=upload_id,
     )
 
-    file_path = get_upload_path(upload)
+    upload_root = Path("backend/uploads").resolve()
+
+    user_directory = upload_root / str(current_user.id)
+
+    file_path = user_directory / upload.stored_filename
 
     report_directory = (
         Path("backend/reports")
@@ -194,18 +198,38 @@ def delete_upload(
     cache_key = f"ai_summary:{current_user.id}:{upload.id}"
 
     try:
-        if file_path.exists():
-            file_path.unlink()
 
-        if csv_report.exists():
-            csv_report.unlink()
+        # Delete uploaded log file (if it exists)
+        try:
+            if file_path.exists():
+                file_path.unlink()
+        except Exception:
+            logger.warning(
+                f"Could not delete upload file: {file_path}"
+            )
 
-        if pdf_report.exists():
-            pdf_report.unlink()
+        # Delete reports
+        try:
+            if csv_report.exists():
+                csv_report.unlink()
 
-        # Remove cached AI summary
-        redis_client.delete(cache_key)
+            if pdf_report.exists():
+                pdf_report.unlink()
+        except Exception:
+            logger.warning(
+                "Failed to delete report files."
+            )
 
+        # Delete Redis cache (optional)
+        if redis_client is not None:
+            try:
+                redis_client.delete(cache_key)
+            except Exception:
+                logger.warning(
+                    "Redis unavailable while deleting cache."
+                )
+
+        # Delete database record
         db.delete(upload)
         db.commit()
 
@@ -216,12 +240,12 @@ def delete_upload(
 
     except Exception as error:
 
+        db.rollback()
+
         logger.exception(
             f"Failed to delete upload "
             f"(User: {current_user.id}, Upload: {upload.id})"
         )
-
-        db.rollback()
 
         raise HTTPException(
             status_code=500,
