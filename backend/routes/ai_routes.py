@@ -1,9 +1,6 @@
 import json
 
-from fastapi import (
-    APIRouter,
-    Depends,
-)
+from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from backend.core.logger import logger
@@ -35,8 +32,19 @@ def get_ai_summary(
     cache_key = f"ai_summary:{current_user.id}:{upload_id}"
 
     try:
-        # Check Redis cache
-        cached_summary = redis_client.get(cache_key)
+        # =====================================================
+        # Optional Redis Cache
+        # =====================================================
+
+        cached_summary = None
+
+        if redis_client is not None:
+            try:
+                cached_summary = redis_client.get(cache_key)
+            except Exception:
+                logger.warning(
+                    "Redis unavailable while reading cache."
+                )
 
         if cached_summary:
             logger.info(
@@ -46,14 +54,20 @@ def get_ai_summary(
 
             return json.loads(cached_summary)
 
-        # Get upload
+        # =====================================================
+        # Fetch Upload
+        # =====================================================
+
         upload, _ = resolve_user_upload_by_id(
-            db,
-            current_user,
-            upload_id,
+            db=db,
+            current_user=current_user,
+            upload_id=upload_id,
         )
 
-        # Generate AI analysis
+        # =====================================================
+        # Generate Analysis
+        # =====================================================
+
         analysis = build_analysis(
             db=db,
             upload=upload,
@@ -66,15 +80,30 @@ def get_ai_summary(
             "ai_summary": analysis.ai_summary,
         }
 
-        # Cache response for 24 hours
-        redis_client.setex(
-            cache_key,
-            86400,
-            json.dumps(response),
-        )
+        # =====================================================
+        # Cache Response (only if Redis exists)
+        # =====================================================
+
+        if redis_client is not None:
+            try:
+                redis_client.setex(
+                    cache_key,
+                    86400,
+                    json.dumps(response),
+                )
+
+                logger.info(
+                    f"AI summary cached "
+                    f"(Upload: {upload.id})"
+                )
+
+            except Exception:
+                logger.warning(
+                    "Redis unavailable while writing cache."
+                )
 
         logger.info(
-            f"AI summary generated and cached "
+            f"AI summary generated successfully "
             f"(Upload: {upload.id})"
         )
 

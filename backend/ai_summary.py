@@ -164,7 +164,7 @@ def call_gemini_with_retry(prompt: str):
 def generate_ai_summary(
     logs,
     statistics,
-    anomalies
+    anomalies,
 ):
 
     if not logs:
@@ -172,22 +172,26 @@ def generate_ai_summary(
             "No logs provided for AI analysis"
         )
 
+    MAX_LOGS_FOR_AI = 100
+
+    sample_logs = logs[:MAX_LOGS_FOR_AI]
+
     log_data = json.dumps(
-        logs,
+        sample_logs,
         indent=2,
-        ensure_ascii=False
+        ensure_ascii=False,
     )
 
     statistics_data = json.dumps(
         statistics,
         indent=2,
-        ensure_ascii=False
+        ensure_ascii=False,
     )
 
     anomalies_data = json.dumps(
         anomalies,
         indent=2,
-        ensure_ascii=False
+        ensure_ascii=False,
     )
 
     prompt = f"""
@@ -195,8 +199,12 @@ You are an expert DevOps engineer and AI log analysis assistant.
 
 Analyze the following system log data.
 
-LOGS:
+LOG SAMPLE (First {len(sample_logs)} entries):
+
 {log_data}
+
+TOTAL LOG ENTRIES:
+{len(logs)}
 
 STATISTICS:
 {statistics_data}
